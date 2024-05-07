@@ -16,20 +16,27 @@ public class MyHashTable<K, V> {
     }
 
     private HashNode<K, V>[] chainArray;
-    private int M = 11;
-    private int size;
 
+    private int size;
+    private double loadFactor = 0.75;
+    private int capacity = 11;
+    private int M = (int)(capacity * loadFactor);
     public MyHashTable() {
-        this.chainArray = new HashNode[M];
+        this(11, 0.75);
     }
 
-    public MyHashTable(int M) {
-        this.M = M;
-        this.chainArray = new HashNode[M];
+    public MyHashTable(int capacity) {
+        this(capacity, 0.75);
+    }
+
+    public MyHashTable(int capacity, double loadFactor) {
+        this.capacity = capacity;
+        this.chainArray = new HashNode[capacity];
+        this.M = (int)(capacity*loadFactor);
     }
 
     private int hash(K key) {
-        return (key.hashCode() & Integer.MAX_VALUE) % M;
+        return (key.hashCode() & Integer.MAX_VALUE) % capacity;
     }
 
     public void put(K key, V value) {
@@ -39,14 +46,16 @@ public class MyHashTable<K, V> {
             chainArray[index] = newNode;
         } else {
             HashNode<K, V> current = chainArray[index];
-            while (current.next != null) {
+            do {
                 if (current.key.equals(key)) {
                     current.value = value;
                     return;
                 }
+                if(current.next == null) {
+                    current.next = newNode;
+                }
                 current = current.next;
-            }
-            current.next = newNode;
+            } while(current != null);
         }
         size++;
     }
@@ -84,16 +93,7 @@ public class MyHashTable<K, V> {
     }
 
     public boolean contains(V value) {
-        for (HashNode<K, V> node : chainArray) {
-            HashNode<K, V> current = node;
-            while (current != null) {
-                if (current.value.equals(value)) {
-                    return true;
-                }
-                current = current.next;
-            }
-        }
-        return false;
+        return getKey(value) != null;
     }
 
     public K getKey(V value) {
