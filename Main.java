@@ -18,7 +18,7 @@ class Student {
 
     @Override
     public int hashCode() {
-        int hash = 17;
+        int hash = gpa;
 
         for (int i = 0; i < name.length(); i++) {
             hash = hash * 31 + name.charAt(i);
@@ -28,34 +28,35 @@ class Student {
             hash = hash * 31 + surname.charAt(i);
         }
 
-        return hash * 31 + (int)(gpa * 10000);
+        return hash;
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        MyHashTable<Integer, Student> table = new MyHashTable<>();
+        MyHashTable<Integer, Student> table = new MyHashTable<>(200);
 
         Random random = new Random();
         for (int i = 0; i < 10000; i++) {
-            int nameLength = random.nextInt(4, 8);
-            int surnameLength = random.nextInt(6, 15);
+            int nameLength = 3 + (int) (Math.random() * 6);
+            int surnameLength = 4 + (int) (Math.random() * 12);
 
-            String name = "" + (char) ('A' + random.nextInt(26));
+            String name = "" + (char) ('A' + (int) (Math.random() * 26));
             for (int k = 1; k < nameLength; k++) {
-                char letter = (char) ('a' + random.nextInt(26));
+                char letter = (char) ('a' + (int) (Math.random() * 26));
                 name += letter;
             }
-            String surname = "" + (char) ('A' + random.nextInt(26));
+            String surname = "" + (char) ('A' + (int) (Math.random() * 26));
             for (int k = 1; k < surnameLength; k++) {
-                char letter = (char) ('a' + random.nextInt(26));
+                char letter = (char) ('a' + (int) (Math.random() * 26));
                 surname += letter;
             }
 
-            int gpa = random.nextInt(400);
+            int gpa = (int) (Math.random() * 400);
 
             Student value = new Student(name, surname, gpa);
             table.put(value.hashCode(), value);
         }
+        table.printBuckets();
     }
 }
