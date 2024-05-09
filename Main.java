@@ -63,8 +63,13 @@ public class Main {
         bst.put(777, "Almaty");
         bst.put(888, "Astana");
         bst.put(778, "London");
-        bst.delete(888);
+        bst.put(333, "Taldykorgan");
+        //bst.delete(888);
         System.out.println(bst.size());
         System.out.println(bst.get(778));
+
+        for (Integer key : bst.iterator()) {
+            System.out.println("key is " + key + " and value is " + bst.get(key));
+        }
     }
 }
