@@ -1,3 +1,5 @@
+import java.util.Iterator;
+
 public class BST<K extends Comparable<K>, V> {
     private Node<K, V> root;
     private int length;
@@ -147,11 +149,68 @@ public class BST<K extends Comparable<K>, V> {
         length--;
     }
 
-//    public Iterable<K> iterator() {
-//
-//    }
+    private Node<K, V> getNextNode(Node<K, V> node) {
+        if (node == null)
+            return null;
+        else if (node.right != null) {
+            node = node.right;
+            while (node.left != null)
+                node = node.left;
+            return node;
+        } else {
+            Node<K, V> child = node;
+            Node<K, V> parent = node.parent;
+            while (parent != null && child == parent.right) {
+                child = parent;
+                parent = parent.parent;
+            }
+            return parent;
+        }
+    }
+
+    public Iterable<K> iterator() {
+        // find most left node
+        Node<K, V> node = root;
+        if (node != null)
+            while (node.left != null)
+                node = node.left;
+
+        Node<K, V> mostLeftNode = node;
+        return new Iterable<K>() {
+            @Override
+            public Iterator<K> iterator() {
+                return new KeyIterator(mostLeftNode);
+            }
+        };
+    }
 
     public int size() {
         return length;
     }
+
+    class KeyIterator implements java.util.Iterator<K> {
+        private Node<K, V> next;
+        private Node<K, V> current;
+
+        public KeyIterator(Node<K, V> first) {
+            this.next = first;
+            this.current = null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return next != null;
+        }
+
+        @Override
+        public K next() {
+            if (next == null)
+                return null;
+
+            current = next;
+            next = getNextNode(next);
+            return current.key;
+        }
+    }
+
 }
