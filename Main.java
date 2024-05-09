@@ -58,5 +58,11 @@ public class Main {
             table.put(value.hashCode(), value);
         }
         table.printBuckets();
+
+        BST<Integer, String> bst = new BST<>();
+        bst.put(777, "Almaty");
+        bst.put(888, "Astana");
+        bst.put(778, "London");
+        System.out.println(bst.size());
     }
 }
