@@ -1,19 +1,25 @@
 public class BST<K extends Comparable<K>, V> {
     private Node<K, V> root;
+    private int length;
     private static class Node<K, V> {
         private K key;
         private V value;
-        private int length = 1;
         private Node<K, V> left, right, parent;
         public Node(K key, V value) {
             this.key = key;
             this.value = value;
+        }
+
+        public void setLeft(Node left) {
+            this.left = left;
+
         }
     }
 
     public void put(K key, V value) {
         if (root == null) {
             root = new Node<>(key, value);
+            length = 1;
             return;
         }
 
@@ -39,25 +45,113 @@ public class BST<K extends Comparable<K>, V> {
         else if (res > 0)
             parent.right = newNode;
 
-        while (parent != null) {
-            parent.length++;
-            parent = parent.parent;
-        }
+        length++;
     }
 
-//    public V get(K key) {
-//
-//    }
-//
-//    public void delete(K key) {
-//
-//    }
-//
+    public V get(K key) {
+        Node<K, V> node = getNode(key);
+        return node != null ? node.value : null;
+    }
+
+    private Node<K, V> getNode(K key) {
+        Node<K, V> node = root;
+        while (node != null) {
+            int cmp = key.compareTo(node.key);
+            if (cmp < 0)
+                node = node.left;
+            else if (cmp > 0)
+                node = node.right;
+            else
+                return node;
+        }
+        return null;
+    }
+
+    public void delete(K key) {
+        Node<K, V> node = getNode(key);
+
+        if (node == null) return;
+        Node<K, V> parent = node.parent;
+
+        if (parent == null) {
+            if (node.left != null) {
+                // this left node becomes new root
+                root = node.left;
+                root.parent = null;
+                // if deleting node also has right
+                if (node.right != null) {
+                    // find the most right node of new root
+                    Node<K, V> right = root;
+                    while (right.right != null)
+                        right = right.right;
+                    // right of deleting node becomes right of the most right node of new root
+                    right.right = node.right;
+                    node.right.parent = right;
+
+                }
+            } else if (node.right != null) {
+                // if deleting node has only right part - that right part becomes new root
+                root = node.right;
+                root.parent = null;
+            } else {
+                root = null;
+            }
+        } else {
+            if (node == parent.left) {
+                if (node.left != null) {
+                    // this left node becomes new left of parent
+                    parent.left = node.left;
+                    node.left.parent = parent;
+                    // if deleting node also has right
+                    if (node.right != null) {
+                        // find the most right node of new left node
+                        Node<K, V> right = node.left;
+                        while (right.right != null)
+                            right = right.right;
+                        // right of deleting node becomes right of the most right node of new left node
+                        right.right = node.right;
+                        node.right.parent = right;
+                    }
+                } else if (node.right != null) {
+                    // if deleting node has only right part - that right part becomes new left node
+                    parent.left = node.right;
+                    node.right.parent = parent;
+                } else {
+                    parent.left = null;
+                }
+            } else {
+                // if deleting node has left
+                if (node.left != null) {
+                    // this left node becomes new right of parent
+                    parent.right = node.left;
+                    node.left.parent = parent;
+                    // if deleting node also has right
+                    if (node.right != null) {
+                        // find the most right node of new right node
+                        Node<K, V> right = node.left;
+                        while (right.right != null)
+                            right = right.right;
+                        // right of deleting node becomes right of the most right node of new right node
+                        right.right = node.right;
+                        node.right.parent = right;
+                    }
+                } else if (node.right != null) {
+                    // if deleting node has only right part - that right part becomes new right node
+                    parent.right = node.right;
+                    node.right.parent = parent;
+                } else {
+                    parent.right = null;
+                }
+            }
+        }
+        length--;
+    }
+
 //    public Iterable<K> iterator() {
 //
 //    }
 
     public int size() {
-        return root.length;
+        return length;
     }
 }

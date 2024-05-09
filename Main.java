@@ -63,6 +63,8 @@ public class Main {
         bst.put(777, "Almaty");
         bst.put(888, "Astana");
         bst.put(778, "London");
+        bst.delete(888);
         System.out.println(bst.size());
+        System.out.println(bst.get(778));
     }
 }
